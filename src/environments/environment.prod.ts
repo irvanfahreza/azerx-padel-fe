@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'azerx-padel-be-production.up.railway.app/api'
+  apiUrl: 'https://azerx-padel-be-production.up.railway.app/api'
 };
