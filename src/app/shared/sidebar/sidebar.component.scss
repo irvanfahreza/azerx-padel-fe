@@ -1,0 +1,16 @@
+.sidebar-item {
+      @apply flex items-center px-5 py-3 text-padel-white/60 hover:text-padel-lime hover:bg-padel-lime/5 transition-all relative whitespace-nowrap overflow-hidden;
+    }
+    .sidebar-item.active {
+      @apply text-padel-white bg-padel-white/5 font-medium;
+    }
+    .sidebar-item.active::before {
+      content: '';
+      @apply absolute left-0 top-0 bottom-0 w-1 bg-padel-lime;
+    }
+    .icon {
+      @apply flex-shrink-0 w-6 h-6 flex items-center justify-center text-lg;
+    }
+    .label {
+      @apply ml-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 tracking-wide text-sm;
+    }

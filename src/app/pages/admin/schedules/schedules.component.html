@@ -1,0 +1,85 @@
+<div class="py-6">
+      <div class="mb-6 flex items-center gap-3 text-sm text-padel-white/60">
+        <a routerLink="/admin/courts" class="hover:text-padel-lime transition-colors">Manajemen Lapangan</a>
+        <span>/</span>
+        <span class="text-padel-white">Setel Jadwal</span>
+      </div>
+
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+        <div>
+          <h1 class="text-4xl font-display font-bold mb-2">Jadwal Lapangan</h1>
+          <p class="text-padel-white/60 text-lg">Kelola jam ketersediaan untuk lapangan ini.</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <input type="date" [(ngModel)]="selectedDate" (change)="loadSchedules()" class="input-field bg-padel-dark/50 w-auto">
+          <button (click)="openBulkModal()" class="btn-primary flex items-center gap-2 px-4 py-2">
+            <span>+</span> Buat Jadwal Massal
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="custom-table whitespace-nowrap">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Waktu Mulai</th>
+                <th>Waktu Selesai</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (loading) {
+                <tr><td colspan="4" class="text-center py-8"><div class="w-6 h-6 border-2 mx-auto border-t-padel-lime rounded-full animate-spin"></div></td></tr>
+              } @else if (schedules.length === 0) {
+                <tr><td colspan="4" class="text-center py-8 text-padel-white/50">Tidak ada jadwal untuk tanggal ini.</td></tr>
+              } @else {
+                @for (schedule of schedules; track schedule.id) {
+                  <tr>
+                    <td class="font-mono text-sm text-padel-white/60">{{ schedule.id }}</td>
+                    <td class="font-bold text-padel-white">{{ schedule.startTime.substring(0,5) }}</td>
+                    <td class="font-bold text-padel-white">{{ schedule.endTime.substring(0,5) }}</td>
+                    <td>
+                      <span class="badge-lime shrink-0 px-2 py-0.5 rounded-full text-[10px] before:hidden"
+                            [ngClass]="schedule.isAvailable ? 'bg-padel-lime/10 text-padel-lime' : 'bg-red-500/10 text-red-500'">
+                        {{ schedule.isAvailable ? 'Tersedia' : 'Dipesan' }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Generate Modal -->
+    @if (showBulkModal) {
+      <div class="fixed inset-0 bg-padel-dark/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div class="glass-card max-w-md w-full p-8 relative">
+          <button (click)="showBulkModal = false" class="absolute top-4 right-4 text-padel-white/50 hover:text-padel-white">✕</button>
+          
+          <h2 class="text-2xl font-display font-bold mb-2">Buat Jadwal Massal</h2>
+          <p class="text-sm text-padel-white/60 mb-6">Sistem akan membuat jadwal per-jam secara otomatis.</p>
+          
+          <form (submit)="generateSchedules($event)" class="space-y-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5 text-padel-white/80">Jam Buka (contoh: 08:00)</label>
+              <input type="time" [(ngModel)]="bulkForm.start" name="start" required class="input-field appearance-none">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium mb-1.5 text-padel-white/80">Jam Tutup (contoh: 22:00)</label>
+              <input type="time" [(ngModel)]="bulkForm.end" name="end" required class="input-field appearance-none">
+            </div>
+
+            <div class="pt-4 flex gap-4">
+              <button type="button" (click)="showBulkModal = false" class="btn-secondary flex-1 border-padel-white/20">Batal</button>
+              <button type="submit" [disabled]="actionLoading" class="btn-primary flex-1">{{ actionLoading ? 'Memproses...' : 'Buat Jadwal' }}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }

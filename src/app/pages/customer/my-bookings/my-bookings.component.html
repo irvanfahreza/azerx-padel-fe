@@ -1,0 +1,105 @@
+<div class="py-6">
+      <div class="mb-10">
+        <h1 class="text-4xl font-display font-bold mb-2">Pesanan Saya</h1>
+        <p class="text-padel-white/60 text-lg">Kelola semua jadwal bermain Padel Anda.</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-hide">
+        @for (tab of tabs; track tab) {
+          <button 
+            (click)="activeTab = tab"
+            class="px-6 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300"
+            [ngClass]="activeTab === tab ? 'bg-padel-white text-padel-dark' : 'bg-padel-white/5 text-padel-white/70 hover:bg-padel-white/10'">
+            {{ tab }}
+          </button>
+        }
+      </div>
+
+      @if (loading) {
+        <div class="flex justify-center py-20">
+          <div class="w-10 h-10 border-4 border-padel-white/10 border-t-padel-lime rounded-full animate-spin"></div>
+        </div>
+      } @else if (filteredBookings.length === 0) {
+        <div class="text-center py-20 glass-card">
+          <p class="text-padel-white/60 text-lg">Tidak ada pesanan dengan status '{{ activeTab }}'</p>
+        </div>
+      } @else {
+        <div class="space-y-4">
+          @for (booking of filteredBookings; track booking.id) {
+            <div class="glass-card p-6 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
+              
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="badge-lime text-[10px] bg-padel-lime/10 px-2 py-0.5 rounded-full before:hidden"
+                        [ngClass]="{
+                          'bg-yellow-500/20 text-yellow-500': booking.status === 'PENDING',
+                          'bg-padel-lime/20 text-padel-lime': booking.status === 'CONFIRMED',
+                          'bg-red-500/20 text-red-500': booking.status === 'CANCELLED'
+                        }">
+                    {{ booking.status }}
+                  </span>
+                  <span class="text-padel-white/40 text-sm">#BKG-{{ booking.id }}</span>
+                </div>
+                
+                <h3 class="text-2xl font-bold font-display text-padel-white mb-1">{{ booking.courtName }}</h3>
+                <p class="text-padel-lime font-medium text-lg">{{ booking.bookingDate | date:'longDate' }}</p>
+                <div class="flex items-center gap-4 mt-3 text-sm text-padel-white/60">
+                  <span class="flex items-center gap-1.5"><span class="text-lg">🕒</span> {{ booking.startTime.substring(0,5) }} - {{ booking.endTime.substring(0,5) }}</span>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                @if (booking.status === 'CONFIRMED') {
+                  <button (click)="openReviewModal(booking)" class="btn-primary py-2 text-sm w-full md:w-auto text-center" [disabled]="actionLoading">Beri Ulasan</button>
+                }
+                @if (booking.status === 'PENDING') {
+                  <button (click)="cancelBooking(booking.id)" class="btn-ghost border border-red-500/30 text-red-400 hover:bg-red-500/10 py-2 w-full md:w-auto text-center rounded-full" [disabled]="actionLoading">Batalkan</button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- modal review -->
+    @if (showReviewModal) {
+      <div class="fixed inset-0 bg-padel-dark/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div class="glass-card max-w-lg w-full p-8 relative">
+          <button (click)="showReviewModal = false" class="absolute top-4 right-4 text-padel-white/50 hover:text-padel-white">✕</button>
+          
+          <h2 class="text-2xl font-display font-bold mb-2">Beri Ulasan Lapangan</h2>
+          <p class="text-padel-white/60 text-sm mb-6">Bagaimana pengalaman bermain Anda di {{ selectedBooking?.courtName }}?</p>
+          
+          <form (submit)="submitReview($event)">
+            <div class="mb-6">
+              <label class="block text-sm font-medium mb-3">Penilaian (Bintang)</label>
+              <div class="flex gap-2">
+                @for (star of [1,2,3,4,5]; track star) {
+                  <button type="button" (click)="reviewData.rating = star" 
+                          class="text-3xl focus:outline-none transition-transform hover:scale-110"
+                          [ngClass]="star <= reviewData.rating ? 'text-yellow-400' : 'text-padel-white/20'">
+                    ★
+                  </button>
+                }
+              </div>
+            </div>
+
+            <div class="mb-8">
+              <label class="block text-sm font-medium mb-1.5">Komentar Tambahan</label>
+              <textarea [(ngModel)]="reviewData.comment" name="comment" rows="4" class="input-field bg-padel-dark" placeholder="Fasilitas AC dingin, lapangan bersih..."></textarea>
+            </div>
+            
+            @if (reviewError) {
+              <p class="text-red-400 text-sm mb-4">{{ reviewError }}</p>
+            }
+
+            <button type="submit" class="btn-primary w-full py-3" [disabled]="actionLoading || reviewData.rating === 0">
+              {{ actionLoading ? 'Mengirim...' : 'Kirim Ulasan' }}
+            </button>
+          </form>
+        </div>
+      </div>
+    }

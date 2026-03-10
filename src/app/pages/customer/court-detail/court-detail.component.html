@@ -1,0 +1,134 @@
+<div class="py-6 min-h-screen">
+      @if (loading) {
+        <div class="flex justify-center py-20">
+          <div class="w-10 h-10 border-4 border-padel-white/10 border-t-padel-lime rounded-full animate-spin"></div>
+        </div>
+      } @else if (court) {
+        
+        <!-- Breadcrumb & Header -->
+        <div class="mb-6 flex items-center gap-3 text-sm text-padel-white/60">
+          <a href="/courts" class="hover:text-padel-lime transition-colors">Lapangan</a>
+          <span>/</span>
+          <span class="text-padel-white">{{ court.name }}</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          <!-- Left: Image & Info -->
+          <div class="lg:col-span-2 space-y-8">
+            <div class="rounded-3xl overflow-hidden h-[400px] relative">
+              <img src="https://images.unsplash.com/photo-1622359556819-219ee5c34e06?q=80&w=1200&auto=format&fit=crop" 
+                   [alt]="court.name" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-padel-dark via-transparent to-transparent opacity-80"></div>
+              <div class="absolute bottom-6 left-6 right-6">
+                <span class="badge-lime mb-3 bg-padel-dark/50 backdrop-blur-md px-3 py-1.5 rounded-full inline-flex w-max">
+                  {{ court.status === 'AVAILABLE' ? 'Tersedia' : court.status }}
+                </span>
+                <h1 class="text-4xl md:text-5xl font-display font-bold text-padel-white">{{ court.name }}</h1>
+              </div>
+            </div>
+
+            <div class="glass-card p-6 md:p-8">
+              <h2 class="text-2xl font-bold mb-4 font-display text-padel-lime">Deskripsi Lapangan</h2>
+              <p class="text-padel-white/80 leading-relaxed text-lg">{{ court.description }}</p>
+            </div>
+            
+            <div class="glass-card p-6 md:p-8">
+              <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold font-display text-padel-lime">Ulasan Pemain</h2>
+                <div class="flex items-center gap-2">
+                  <span class="text-yellow-400 text-xl font-bold">★ {{ averageRating.toFixed(1) }}</span>
+                  <span class="text-padel-white/60 text-sm">({{ reviews.length }} ulasan)</span>
+                </div>
+              </div>
+              
+              @if (reviews.length === 0) {
+                <p class="text-padel-white/60 text-center py-8">Belum ada ulasan untuk lapangan ini.</p>
+              } @else {
+                <div class="space-y-6">
+                  @for (review of reviews; track review.id) {
+                    <div class="border-b border-padel-white/10 pb-6 last:border-0 last:pb-0">
+                      <div class="flex justify-between items-start mb-2">
+                        <div>
+                          <p class="font-bold text-lg">{{ review.userName }}</p>
+                          <div class="text-yellow-400 text-sm">
+                            {{ '★'.repeat(review.rating) }}{{ '☆'.repeat(5 - review.rating) }}
+                          </div>
+                        </div>
+                        <span class="text-xs text-padel-white/40">{{ review.createdAt | date:'longDate' }}</span>
+                      </div>
+                      <p class="text-padel-white/80 mt-2">{{ review.comment }}</p>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Right: Booking Widget -->
+          <div class="lg:col-span-1">
+            <div class="glass-card p-6 sticky top-24">
+              <div class="mb-6 flex justify-between items-end border-b border-padel-white/10 pb-6">
+                <div>
+                  <p class="text-padel-white/60 text-sm mb-1">Harga Sewa</p>
+                  <p class="text-3xl font-display font-bold text-padel-white">Rp {{ court.pricePerHour | number }}<span class="text-sm font-normal text-padel-white/40">/jam</span></p>
+                </div>
+              </div>
+
+              <h3 class="font-bold text-lg mb-4 text-padel-white">Pilih Tanggal</h3>
+              <input type="date" [(ngModel)]="selectedDate" (change)="loadSchedules()" [min]="today"
+                     class="input-field mb-6 w-full cursor-pointer bg-padel-dark/50" [disabled]="bookingLoading">
+
+              <h3 class="font-bold text-lg mb-4 text-padel-white">Pilih Jam Tersedia</h3>
+              
+              @if (schedulesLoading) {
+                <div class="flex justify-center py-6">
+                  <div class="w-6 h-6 border-2 border-padel-white/20 border-t-padel-lime rounded-full animate-spin"></div>
+                </div>
+              } @else if (schedules.length === 0) {
+                <p class="text-center text-padel-white/50 text-sm py-4">Jadwal tidak tersedia untuk tanggal ini.</p>
+              } @else {
+                <div class="grid grid-cols-2 gap-3 mb-8">
+                  @for (schedule of schedules; track schedule.id) {
+                    <button 
+                      [disabled]="!schedule.isAvailable || bookingLoading"
+                      (click)="selectSchedule(schedule)"
+                      class="py-3 px-2 rounded-xl text-sm font-mono transition-all duration-200 border text-center"
+                      [ngClass]="{
+                        'border-padel-lime bg-padel-lime/10 text-padel-lime': selectedSchedule?.id === schedule.id,
+                        'border-padel-white/10 bg-padel-dark/50 text-padel-white hover:border-padel-lime/50': schedule.isAvailable && selectedSchedule?.id !== schedule.id,
+                        'border-red-500/20 bg-red-500/5 text-red-500/50 cursor-not-allowed': !schedule.isAvailable
+                      }">
+                      {{ schedule.startTime.substring(0,5) }} - {{ schedule.endTime.substring(0,5) }}
+                    </button>
+                  }
+                </div>
+              }
+
+              @if (selectedSchedule) {
+                <div class="mb-6">
+                  <label class="block text-sm font-medium text-padel-white/80 mb-1.5">Catatan Tambahan (Opsional)</label>
+                  <textarea [(ngModel)]="bookingNotes" rows="2" class="input-field bg-padel-dark/50" placeholder="Contoh: Pinjam 2 raket"></textarea>
+                </div>
+              }
+
+              @if (errorMsg) {
+                <p class="text-red-400 text-sm mb-4 text-center">{{ errorMsg }}</p>
+              }
+
+              <button 
+                class="w-full py-4 rounded-xl font-bold text-lg transition-all"
+                [disabled]="!selectedSchedule || bookingLoading"
+                [ngClass]="!selectedSchedule || bookingLoading ? 'bg-padel-white/5 text-padel-white/30 cursor-not-allowed' : 'btn-primary'"
+                (click)="confirmBooking()">
+                {{ bookingLoading ? 'Memproses...' : 'Ajukan Pesanan' }}
+              </button>
+              
+              @if (!authService.isAuthenticated()) {
+                <p class="text-center text-xs text-padel-lime mt-4 mt-2">Anda harus masuk untuk melakukan pesanan.</p>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>

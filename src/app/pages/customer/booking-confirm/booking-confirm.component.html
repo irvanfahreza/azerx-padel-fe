@@ -1,0 +1,47 @@
+<div class="py-12 flex justify-center items-center min-h-[70vh]">
+      <div class="glass-card max-w-xl w-full p-8 md:p-12 text-center">
+        <div class="w-20 h-20 bg-padel-lime/20 text-padel-lime rounded-full flex items-center justify-center mx-auto mb-8">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        
+        <h1 class="text-3xl font-display font-bold text-padel-white mb-4">Pesanan Berhasil Dibuat!</h1>
+        <p class="text-padel-white/70 mb-8 text-lg">
+          Pesanan Anda sedang menunggu konfirmasi admin. Notifikasi akan dikirimkan melalui email setelah disetujui.
+        </p>
+
+        @if (booking) {
+          <div class="bg-padel-dark/50 border border-padel-white/10 rounded-2xl p-6 text-left mb-8">
+            <h3 class="font-bold text-padel-lime mb-4 text-xl border-b border-padel-white/10 pb-4">Detail Pesanan</h3>
+            <div class="space-y-4">
+              <div class="flex justify-between">
+                <span class="text-padel-white/60">ID Pesanan</span>
+                <span class="font-mono font-bold text-padel-white">#BKG-{{ booking.id }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-padel-white/60">Lapangan</span>
+                <span class="font-bold text-padel-white">{{ booking.courtName }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-padel-white/60">Tanggal Penuh</span>
+                <span class="font-bold text-padel-white">{{ booking.bookingDate }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-padel-white/60">Waktu Bermain</span>
+                <span class="font-bold text-padel-lime">{{ booking.startTime.substring(0,5) }} - {{ booking.endTime.substring(0,5) }}</span>
+              </div>
+              <div class="flex justify-between items-center mt-2">
+                <span class="text-padel-white/60">Status</span>
+                <span class="bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-xs font-bold tracking-wide">MENUNGGU</span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a routerLink="/my-bookings" class="btn-primary flex-1">Lihat Pesanan Saya</a>
+          <a routerLink="/" class="btn-secondary flex-1 border-padel-white/20">Kembali ke Beranda</a>
+        </div>
+      </div>
+    </div>

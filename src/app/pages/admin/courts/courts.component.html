@@ -1,0 +1,98 @@
+<div class="py-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+        <div>
+          <h1 class="text-4xl font-display font-bold mb-2">Manajemen Lapangan</h1>
+          <p class="text-padel-white/60 text-lg">Atur data lapangan dan ketersediaannya.</p>
+        </div>
+        <button (click)="openModal()" class="btn-primary flex items-center gap-2">
+          <span>+</span> Tambah Lapangan
+        </button>
+      </div>
+
+      <div class="glass-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="custom-table whitespace-nowrap">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nama Lapangan</th>
+                <th>Harga/Jam</th>
+                <th>Status</th>
+                <th class="text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (loading) {
+                <tr><td colspan="5" class="text-center py-8"><div class="w-6 h-6 border-2 mx-auto border-t-padel-lime rounded-full animate-spin"></div></td></tr>
+              } @else if (courts.length === 0) {
+                <tr><td colspan="5" class="text-center py-8 text-padel-white/50">Tidak ada data lapangan.</td></tr>
+              } @else {
+                @for (court of courts; track court.id) {
+                  <tr>
+                    <td class="font-mono text-sm text-padel-white/60">{{ court.id }}</td>
+                    <td class="font-medium font-display text-base">{{ court.name }}</td>
+                    <td class="text-padel-lime font-mono">Rp {{ court.pricePerHour | number }}</td>
+                    <td>
+                      <span class="badge-lime shrink-0 px-2 py-0.5 rounded-full text-[10px] before:hidden"
+                            [ngClass]="court.status === 'AVAILABLE' ? 'bg-padel-lime/10 text-padel-lime' : 'bg-padel-white/10 text-padel-white/60'">
+                        {{ court.status }}
+                      </span>
+                    </td>
+                    <td class="text-right space-x-3">
+                      <a [routerLink]="['/admin/courts', court.id, 'schedules']" class="text-sm text-blue-400 hover:underline">Jadwal</a>
+                      <button (click)="editCourt(court)" class="text-sm text-yellow-400 hover:underline">Edit</button>
+                      <button (click)="deleteCourt(court.id)" class="text-sm text-red-400 hover:underline">Hapus</button>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Court Modal -->
+    @if (showModal) {
+      <div class="fixed inset-0 bg-padel-dark/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div class="glass-card max-w-lg w-full p-8 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <button (click)="closeModal()" class="absolute top-4 right-4 text-padel-white/50 hover:text-padel-white">✕</button>
+          
+          <h2 class="text-2xl font-display font-bold mb-6">{{ isEditing ? 'Edit Lapangan' : 'Tambah Lapangan Baru' }}</h2>
+          
+          <form (submit)="saveCourt($event)" class="space-y-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5 text-padel-white/80">Nama Lapangan</label>
+              <input type="text" [(ngModel)]="courtForm.name" name="name" required class="input-field" placeholder="Nama Court">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium mb-1.5 text-padel-white/80">Harga per Jam (Rp)</label>
+              <input type="number" [(ngModel)]="courtForm.pricePerHour" name="price" required class="input-field" placeholder="150000">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-1.5 text-padel-white/80">Status</label>
+              <select [(ngModel)]="courtForm.status" name="status" class="input-field appearance-none">
+                <option value="AVAILABLE" class="bg-padel-dark">AVAILABLE</option>
+                <option value="MAINTENANCE" class="bg-padel-dark">MAINTENANCE</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium mb-1.5 text-padel-white/80">Deskripsi</label>
+              <textarea [(ngModel)]="courtForm.description" name="description" rows="3" class="input-field" placeholder="Deskripsi detail..."></textarea>
+            </div>
+
+            @if (formError) {
+              <p class="text-red-400 text-sm mb-2">{{ formError }}</p>
+            }
+
+            <div class="pt-4 flex gap-4">
+              <button type="button" (click)="closeModal()" class="btn-secondary flex-1">Batal</button>
+              <button type="submit" [disabled]="actionLoading" class="btn-primary flex-1">{{ actionLoading ? 'Menyimpan...' : 'Simpan' }}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }

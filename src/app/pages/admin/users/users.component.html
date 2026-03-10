@@ -1,0 +1,64 @@
+<div class="py-6">
+      <div class="mb-8">
+        <h1 class="text-4xl font-display font-bold mb-2">Manajemen Pengguna</h1>
+        <p class="text-padel-white/60 text-lg">Kelola status aktif pelanggan dan admin.</p>
+      </div>
+
+      <div class="glass-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="custom-table whitespace-nowrap">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nama</th>
+                <th>Email / WA</th>
+                <th>Waktu Daftar</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th class="text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (loading) {
+                <tr><td colspan="7" class="text-center py-8"><div class="w-6 h-6 border-2 mx-auto border-t-padel-lime rounded-full animate-spin"></div></td></tr>
+              } @else if (users.length === 0) {
+                <tr><td colspan="7" class="text-center py-8 text-padel-white/50">Belum ada pengguna terdaftar.</td></tr>
+              } @else {
+                @for (user of users; track user.id) {
+                  <tr>
+                    <td class="font-mono text-sm text-padel-white/60">USER-{{ user.id }}</td>
+                    <td class="font-bold text-padel-white">{{ user.name }}</td>
+                    <td>
+                      <div class="flex flex-col">
+                        <span>{{ user.email }}</span>
+                        <span class="text-xs text-padel-white/50">{{ user.phone }}</span>
+                      </div>
+                    </td>
+                    <td class="text-sm text-padel-white/80">{{ user.createdAt | date:'shortDate' }}</td>
+                    <td>
+                      <span class="badge-lime shrink-0 px-2 py-0.5 rounded-full text-[10px] before:hidden"
+                            [ngClass]="user.role === 'ROLE_ADMIN' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-padel-white/5 text-padel-white/70 border border-padel-white/10'">
+                        {{ user.role.replace('ROLE_', '') }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="inline-flex items-center gap-1.5 text-xs">
+                        <span class="w-2 h-2 rounded-full" [ngClass]="user.isActive ? 'bg-padel-lime' : 'bg-red-500'"></span>
+                        {{ user.isActive ? 'Aktif' : 'Nonaktif' }}
+                      </span>
+                    </td>
+                    <td class="text-right space-x-3">
+                      <button (click)="toggleActive(user.id)" class="text-sm hover:underline"
+                              [ngClass]="user.isActive ? 'text-red-400' : 'text-padel-lime'"
+                              [disabled]="actionLoading">
+                        {{ user.isActive ? 'Nonaktifkan' : 'Aktifkan' }}
+                      </button>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>

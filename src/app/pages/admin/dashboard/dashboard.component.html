@@ -1,0 +1,92 @@
+<div class="py-6">
+      <div class="mb-10">
+        <h1 class="text-4xl font-display font-bold mb-2">Dasbor Admin</h1>
+        <p class="text-padel-white/60 text-lg">Ringkasan performa AZERX Padel hari ini.</p>
+      </div>
+
+      @if (loading) {
+        <div class="flex justify-center py-20">
+          <div class="w-10 h-10 border-4 border-padel-white/10 border-t-padel-lime rounded-full animate-spin"></div>
+        </div>
+      } @else if (stats) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <!-- Stat 1 -->
+          <div class="glass-card p-6 border-l-4 border-l-padel-lime group hover:scale-[1.02] transition-transform">
+            <p class="text-padel-white/60 text-sm font-medium mb-1">Total Pesanan</p>
+            <div class="flex items-end gap-3">
+              <h3 class="text-4xl font-display font-bold text-padel-white group-hover:text-padel-lime transition-colors">{{ stats.totalBookings }}</h3>
+            </div>
+          </div>
+          
+          <!-- Stat 2 -->
+          <div class="glass-card p-6 border-l-4 border-l-blue-400 group hover:scale-[1.02] transition-transform">
+            <p class="text-padel-white/60 text-sm font-medium mb-1">Lapangan Aktif</p>
+            <div class="flex items-end gap-3">
+              <h3 class="text-4xl font-display font-bold text-padel-white group-hover:text-blue-400 transition-colors">{{ stats.activeCourts }}</h3>
+            </div>
+          </div>
+
+          <!-- Stat 3 -->
+          <div class="glass-card p-6 border-l-4 border-l-purple-400 group hover:scale-[1.02] transition-transform">
+            <p class="text-padel-white/60 text-sm font-medium mb-1">Total Pelanggan</p>
+            <div class="flex items-end gap-3">
+              <h3 class="text-4xl font-display font-bold text-padel-white group-hover:text-purple-400 transition-colors">{{ stats.totalCustomers }}</h3>
+            </div>
+          </div>
+
+          <!-- Stat 4 -->
+          <div class="glass-card p-6 border-l-4 border-l-yellow-400 group hover:scale-[1.02] transition-transform">
+            <p class="text-padel-white/60 text-sm font-medium mb-1">Rata-rata Rating</p>
+            <div class="flex items-end gap-3">
+              <h3 class="text-4xl font-display font-bold text-padel-white group-hover:text-yellow-400 transition-colors">★ {{ stats.averageRating ? stats.averageRating.toFixed(1) : '0.0' }}</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card p-6 overflow-hidden">
+          <div class="flex justify-between items-center mb-6 border-b border-padel-white/10 pb-4">
+            <h2 class="text-xl font-bold font-display text-padel-white">Pesanan Terbaru</h2>
+            <a href="/admin/bookings" class="text-sm text-padel-lime hover:underline">Lihat Semua</a>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="custom-table whitespace-nowrap">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Pelanggan</th>
+                  <th>Lapangan</th>
+                  <th>Tanggal</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (booking of stats.recentBookings; track booking.id) {
+                  <tr>
+                    <td class="font-mono text-sm text-padel-white/60">#BKG-{{ booking.id }}</td>
+                    <td class="font-medium">{{ booking.userName }}</td>
+                    <td>{{ booking.courtName }}</td>
+                    <td>{{ booking.bookingDate | date:'shortDate' }} | {{ booking.startTime.substring(0,5) }}</td>
+                    <td>
+                      <span class="badge-lime shrink-0 px-3 py-1 rounded-full before:hidden w-max text-[10px]"
+                            [ngClass]="{
+                              'bg-yellow-500/10 border border-yellow-500/20 text-yellow-400': booking.status === 'PENDING',
+                              'bg-padel-lime/10 border border-padel-lime/20 text-padel-lime': booking.status === 'CONFIRMED',
+                              'bg-red-500/10 border border-red-500/20 text-red-500': booking.status === 'CANCELLED'
+                            }">
+                        {{ booking.status }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+                @if (!stats.recentBookings || stats.recentBookings.length === 0) {
+                  <tr>
+                    <td colspan="5" class="text-center py-8 text-padel-white/50">Belum ada pesanan terbaru.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </div>

@@ -1,0 +1,48 @@
+<div class="py-6">
+      <div class="flex justify-between items-end mb-10">
+        <div>
+          <h1 class="text-4xl font-display font-bold mb-2">Pilih Lapangan</h1>
+          <p class="text-padel-white/60 text-lg">Daftar lapangan eksklusif AZERX Padel</p>
+        </div>
+      </div>
+
+      @if (loading) {
+        <div class="flex justify-center py-20">
+          <div class="w-10 h-10 border-4 border-padel-white/10 border-t-padel-lime rounded-full animate-spin"></div>
+        </div>
+      } @else if (courts.length === 0) {
+        <div class="text-center py-20 text-padel-white/60">
+          <p>Belum ada lapangan yang tersedia.</p>
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          @for (court of courts; track court.id) {
+            <div class="glass-card overflow-hidden group flex flex-col cursor-pointer" [routerLink]="['/courts', court.id]">
+              <div class="h-56 overflow-hidden relative">
+                <div class="absolute inset-0 bg-gradient-to-t from-padel-dark to-transparent opacity-80 z-10"></div>
+                <img src="https://images.unsplash.com/photo-1622359556819-219ee5c34e06?q=80&w=800&auto=format&fit=crop" 
+                     [alt]="court.name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                <div class="absolute top-4 right-4 z-20 bg-padel-dark/80 backdrop-blur-sm px-3 py-1 rounded-full border border-padel-white/10">
+                  <span class="badge-lime whitespace-nowrap">{{ court.status === 'AVAILABLE' ? 'Tersedia' : court.status }}</span>
+                </div>
+              </div>
+              <div class="p-6 flex-1 flex flex-col">
+                <h3 class="text-2xl font-bold font-display mb-2 group-hover:text-padel-lime transition-colors">{{ court.name }}</h3>
+                <p class="text-padel-white/60 text-sm mb-6 flex-1 line-clamp-2">{{ court.description }}</p>
+                <div class="flex justify-between items-center mt-auto">
+                  <div>
+                    <span class="text-padel-lime font-bold text-xl">Rp {{ court.pricePerHour | number }}</span>
+                    <span class="text-padel-white/40 text-sm">/jam</span>
+                  </div>
+                  <div class="w-10 h-10 rounded-full bg-padel-white/5 flex items-center justify-center group-hover:bg-padel-lime group-hover:text-padel-dark transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>

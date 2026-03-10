@@ -1,0 +1,81 @@
+<div class="py-6">
+      <div class="mb-8">
+        <h1 class="text-4xl font-display font-bold mb-2">Manajemen Pesanan</h1>
+        <p class="text-padel-white/60 text-lg">Setujui atau batalkan pesanan pelanggan.</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-hide">
+        @for (tab of tabs; track tab) {
+          <button 
+            (click)="activeTab = tab"
+            class="px-6 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300"
+            [ngClass]="activeTab === tab ? 'bg-padel-white text-padel-dark' : 'bg-padel-white/5 text-padel-white/70 hover:bg-padel-white/10'">
+            {{ tab }}
+          </button>
+        }
+      </div>
+
+      <div class="glass-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="custom-table whitespace-nowrap">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Pelanggan</th>
+                <th>Lapangan</th>
+                <th>Jadwal</th>
+                <th>Catatan</th>
+                <th>Status</th>
+                <th class="text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (loading) {
+                <tr><td colspan="7" class="text-center py-8"><div class="w-6 h-6 border-2 mx-auto border-t-padel-lime rounded-full animate-spin"></div></td></tr>
+              } @else if (filteredBookings.length === 0) {
+                <tr><td colspan="7" class="text-center py-8 text-padel-white/50">Tidak ada pesanan untuk status ini.</td></tr>
+              } @else {
+                @for (booking of filteredBookings; track booking.id) {
+                  <tr>
+                    <td class="font-mono text-sm text-padel-white/60">#BKG-{{ booking.id }}</td>
+                    <td>
+                      <div class="flex flex-col">
+                        <span class="font-medium text-padel-white">{{ booking.userName }}</span>
+                        <span class="text-xs text-padel-white/50">ID: USER-{{ booking.userId }}</span>
+                      </div>
+                    </td>
+                    <td class="font-bold text-padel-white">{{ booking.courtName }}</td>
+                    <td>
+                      <div class="flex flex-col">
+                        <span class="text-padel-lime">{{ booking.bookingDate | date:'shortDate' }}</span>
+                        <span class="text-xs text-padel-white/70">{{ booking.startTime.substring(0,5) }} - {{ booking.endTime.substring(0,5) }}</span>
+                      </div>
+                    </td>
+                    <td><span class="text-sm text-padel-white/80 max-w-[150px] truncate block" [title]="booking.notes">{{ booking.notes || '-' }}</span></td>
+                    <td>
+                      <span class="badge-lime shrink-0 px-2 py-0.5 rounded-full text-[10px] before:hidden"
+                            [ngClass]="{
+                              'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20': booking.status === 'PENDING',
+                              'bg-padel-lime/10 text-padel-lime border border-padel-lime/20': booking.status === 'CONFIRMED',
+                              'bg-red-500/10 text-red-500 border border-red-500/20': booking.status === 'CANCELLED'
+                            }">
+                        {{ booking.status }}
+                      </span>
+                    </td>
+                    <td class="text-right space-x-3">
+                      @if (booking.status === 'PENDING') {
+                        <button (click)="confirmBooking(booking.id)" class="text-sm font-medium text-padel-lime hover:underline" [disabled]="actionLoading">Konfirmasi</button>
+                        <button (click)="cancelBooking(booking.id)" class="text-sm font-medium text-red-400 hover:underline" [disabled]="actionLoading">Batalkan</button>
+                      } @else {
+                        <span class="text-xs text-padel-white/30 italic">Tidak ada aksi</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
