@@ -1,45 +1,55 @@
-<aside class="group w-16 hover:w-56 h-full bg-padel-card border-r border-padel-white/5 flex flex-col transition-all duration-300 overflow-hidden z-50 shrink-0">
-      <div class="flex-1 py-6 flex flex-col gap-2 relative">
-        <!-- Admin Links -->
-        @if (authService.isAdmin()) {
-          <a routerLink="/admin/dashboard" routerLinkActive="active" class="sidebar-item">
-            <span class="icon">📊</span>
-            <span class="label">Dasbor</span>
-          </a>
-          <a routerLink="/admin/courts" routerLinkActive="active" class="sidebar-item">
-            <span class="icon">🎾</span>
-            <span class="label">Lapangan</span>
-          </a>
-          <a routerLink="/admin/bookings" routerLinkActive="active" class="sidebar-item">
-            <span class="icon">📅</span>
-            <span class="label">Pesanan</span>
-          </a>
-          <a routerLink="/admin/users" routerLinkActive="active" class="sidebar-item">
-            <span class="icon">👥</span>
-            <span class="label">Pengguna</span>
-          </a>
-          <!-- <a routerLink="/admin/reviews" routerLinkActive="active" class="sidebar-item">
-            <span class="icon">⭐</span>
-            <span class="label">Ulasan</span>
-          </a> -->
-        } @else {
-          <!-- Customer Links -->
-          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="sidebar-item">
-            <span class="icon">🏠</span>
-            <span class="label">Beranda</span>
-          </a>
-          <a routerLink="/courts" routerLinkActive="active" class="sidebar-item">
-            <span class="icon">🎾</span>
-            <span class="label">Cari Lapangan</span>
-          </a>
-          <a routerLink="/my-bookings" routerLinkActive="active" class="sidebar-item">
-            <span class="icon">🗓️</span>
-            <span class="label">Pesanan Saya</span>
-          </a>
-          <a routerLink="/profile" routerLinkActive="active" class="sidebar-item">
-            <span class="icon">👤</span>
-            <span class="label">Profil</span>
-          </a>
-        }
-      </div>
-    </aside>
+<!-- Mobile Backdrop -->
+@if (layoutService.isMobileSidebarOpen()) {
+  <div class="fixed inset-0 bg-padel-dark/80 backdrop-blur-sm z-[90] md:hidden" 
+       (click)="layoutService.closeMobileSidebar()"></div>
+}
+
+<aside 
+  class="group fixed md:relative w-64 md:w-16 md:hover:w-56 h-full bg-padel-card border-r border-padel-white/5 flex flex-col transition-all duration-300 overflow-hidden z-[100] md:z-50 shrink-0"
+  [ngClass]="layoutService.isMobileSidebarOpen() ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
+  
+  <div class="flex items-center justify-between p-6 md:hidden border-b border-padel-white/10">
+    <span class="font-display font-bold text-xl text-padel-white">Menu</span>
+    <button (click)="layoutService.closeMobileSidebar()" class="text-padel-white/50 hover:text-padel-white">✕</button>
+  </div>
+
+  <div class="flex-1 py-6 flex flex-col gap-2 relative">
+    <!-- Admin Links -->
+    @if (authService.isAdmin()) {
+      <a routerLink="/admin/dashboard" routerLinkActive="active" class="sidebar-item" (click)="layoutService.closeMobileSidebar()">
+        <span class="icon">📊</span>
+        <span class="label">Dasbor</span>
+      </a>
+      <a routerLink="/admin/courts" routerLinkActive="active" class="sidebar-item" (click)="layoutService.closeMobileSidebar()">
+        <span class="icon">🎾</span>
+        <span class="label">Lapangan</span>
+      </a>
+      <a routerLink="/admin/bookings" routerLinkActive="active" class="sidebar-item" (click)="layoutService.closeMobileSidebar()">
+        <span class="icon">📅</span>
+        <span class="label">Pesanan</span>
+      </a>
+      <a routerLink="/admin/users" routerLinkActive="active" class="sidebar-item" (click)="layoutService.closeMobileSidebar()">
+        <span class="icon">👥</span>
+        <span class="label">Pengguna</span>
+      </a>
+    } @else {
+      <!-- Customer Links -->
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="sidebar-item" (click)="layoutService.closeMobileSidebar()">
+        <span class="icon">🏠</span>
+        <span class="label">Beranda</span>
+      </a>
+      <a routerLink="/courts" routerLinkActive="active" class="sidebar-item" (click)="layoutService.closeMobileSidebar()">
+        <span class="icon">🎾</span>
+        <span class="label">Cari Lapangan</span>
+      </a>
+      <a routerLink="/my-bookings" routerLinkActive="active" class="sidebar-item" (click)="layoutService.closeMobileSidebar()">
+        <span class="icon">🗓️</span>
+        <span class="label">Pesanan Saya</span>
+      </a>
+      <a routerLink="/profile" routerLinkActive="active" class="sidebar-item" (click)="layoutService.closeMobileSidebar()">
+        <span class="icon">👤</span>
+        <span class="label">Profil</span>
+      </a>
+    }
+  </div>
+</aside>
