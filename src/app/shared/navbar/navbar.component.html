@@ -8,10 +8,15 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
     </button>
-    }
-    <a routerLink="/" class="hidden text-xl font-display font-bold tracking-tight">
+
+    <a routerLink="/" class="hidden lg:flex flex-1 text-xl font-display font-bold tracking-tight">
       AZERX <span class="text-padel-lime animate-pulse">Padel</span>
     </a>
+    } @else {
+    <a routerLink="/" class="text-xl font-display font-bold tracking-tight">
+      AZERX <span class="text-padel-lime animate-pulse">Padel</span>
+    </a>
+    }
   </div>
   <div class="flex items-center gap-4">
     @if (authService.currentUser()) {
