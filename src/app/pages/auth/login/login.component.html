@@ -1,60 +1,65 @@
 <div class="flex h-screen w-full font-sans bg-padel-dark fixed inset-0 z-50">
-      <!-- Left: Image -->
-      <div class="hidden lg:flex flex-1 relative bg-padel-dark items-center justify-center overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-tr from-padel-dark via-padel-dark/80 to-transparent z-10"></div>
-        <img src="https://images.unsplash.com/photo-1622359556819-219ee5c34e06?q=80&w=2000&auto=format&fit=crop" 
-             alt="Padel Court" class="absolute inset-0 w-full h-full object-cover opacity-60">
-        <div class="relative z-20 max-w-lg px-12 text-center">
-          <h1 class="font-display font-bold text-5xl text-padel-white mb-6">Mulai Pertandingan Anda Bersama <span class="text-padel-lime">AZERX</span></h1>
-          <p class="text-padel-white/80 text-lg">Platform booking lapangan Padel paling eksklusif dan premium di Indonesia. Rasakan kemudahan manajemen jadwal secara real-time.</p>
-        </div>
-      </div>
-      
-      <!-- Right: Form -->
-      <div class="flex-1 flex flex-col justify-center px-8 sm:px-16 lg:px-24 xl:px-32 bg-padel-dark relative z-20">
-        <div class="w-full max-w-md mx-auto">
-          <a routerLink="/" class="text-2xl font-display font-bold tracking-tight mb-8 block transition-colors hover:text-padel-lime">
-            AZERX <span class="text-padel-lime animate-pulse">Padel</span>
-          </a>
-          
-          <a routerLink="/" class="inline-flex items-center text-padel-lime hover:text-[#ccff5c] mb-6 text-sm font-medium transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Kembali ke Beranda
-          </a>
-
-          <h2 class="text-3xl font-display font-bold text-padel-white mb-2">Selamat Datang 👋</h2>
-          <p class="text-padel-white/60 mb-8">Silakan masuk ke akun Anda untuk melanjutkan pemesanan.</p>
-          
-          @if (errorMsg) {
-            <div class="bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-3 rounded-lg mb-6 text-sm">
-              {{ errorMsg }}
-            </div>
-          }
-
-          <form (submit)="onSubmit($event)" class="space-y-5">
-            <div>
-              <label class="block text-sm font-medium text-padel-white/80 mb-1.5">Email</label>
-              <input type="email" [(ngModel)]="email" name="email" required autocomplete="email" placeholder="nama@email.com" class="input-field">
-            </div>
-            
-            <div>
-              <div class="flex justify-between items-center mb-1.5">
-                <label class="block text-sm font-medium text-padel-white/80">Kata Sandi</label>
-                <a href="#" class="text-xs text-padel-lime hover:underline">Lupa Sandi?</a>
-              </div>
-              <input type="password" [(ngModel)]="password" name="password" required autocomplete="current-password" placeholder="••••••••" class="input-field">
-            </div>
-            
-            <button type="submit" [disabled]="loading" class="btn-primary w-full flex justify-center py-3 mt-4 text-base">
-              {{ loading ? 'Memproses...' : 'Masuk Sekarang' }}
-            </button>
-          </form>
-          
-          <p class="mt-8 text-center text-sm text-padel-white/60">
-            Belum punya akun? <a routerLink="/register" class="font-medium text-padel-lime hover:underline">Daftar di sini</a>
-          </p>
-        </div>
-      </div>
+  <!-- Left: Image -->
+  <div class="hidden lg:flex flex-1 relative bg-padel-dark items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-tr from-padel-dark via-padel-dark/80 to-transparent z-10"></div>
+    <div class="relative z-20 max-w-lg px-12 text-center">
+      <h1 class="font-display font-bold text-5xl text-padel-white mb-6">Mulai Pertandingan Anda Bersama <span
+          class="text-padel-lime">AZERX</span></h1>
+      <p class="text-padel-white/80 text-lg">Platform booking lapangan Padel paling eksklusif dan premium di Indonesia.
+        Rasakan kemudahan manajemen jadwal secara real-time.</p>
     </div>
+  </div>
+
+  <!-- Right: Form -->
+  <div class="flex-1 flex flex-col justify-center px-8 sm:px-16 lg:px-24 xl:px-32 bg-padel-dark relative z-20">
+    <div class="w-full max-w-md mx-auto">
+      <h1 class="text-2xl font-display font-bold tracking-tight mb-8 block transition-colors hover:text-padel-lime">
+        AZERX <span class="text-padel-lime animate-pulse">Padel</span>
+      </h1>
+
+      <a routerLink="/"
+        class="inline-flex items-center text-padel-lime hover:text-[#ccff5c] mb-6 text-sm font-medium transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Kembali ke Beranda
+      </a>
+
+      <h2 class="text-3xl font-display font-bold text-padel-white mb-2">Selamat Datang 👋</h2>
+      <p class="text-padel-white/60 mb-8">Silakan masuk ke akun Anda untuk melanjutkan pemesanan.</p>
+
+      @if (errorMsg) {
+      <div class="bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-3 rounded-lg mb-6 text-sm">
+        {{ errorMsg }}
+      </div>
+      }
+
+      <form (submit)="onSubmit($event)" class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-padel-white/80 mb-1.5">Email</label>
+          <input type="email" [(ngModel)]="email" name="email" required autocomplete="email"
+            placeholder="nama@email.com" class="input-field">
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label class="block text-sm font-medium text-padel-white/80">Kata Sandi</label>
+            <!-- <a href="#" class="text-xs text-padel-lime hover:underline">Lupa Sandi?</a> -->
+          </div>
+          <input type="password" [(ngModel)]="password" name="password" required autocomplete="current-password"
+            placeholder="••••••••" class="input-field">
+        </div>
+
+        <button type="submit" [disabled]="loading" class="btn-primary w-full flex justify-center py-3 mt-4 text-base">
+          {{ loading ? 'Memproses...' : 'Masuk Sekarang' }}
+        </button>
+      </form>
+
+      <p class="mt-8 text-center text-sm text-padel-white/60">
+        Belum punya akun? <a routerLink="/register" class="font-medium text-padel-lime hover:underline">Daftar di
+          sini</a>
+      </p>
+    </div>
+  </div>
+</div>
