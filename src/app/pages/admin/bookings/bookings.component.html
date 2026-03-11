@@ -72,9 +72,9 @@
             <td class="text-right space-x-3">
               @if (booking.status === 'PENDING') {
               <button (click)="confirmBooking(booking.id)" class="text-sm font-medium text-padel-lime hover:underline"
-                style="padding: 10px;" [disabled]="actionLoading">Konfirmasi</button>
+                [disabled]="actionLoading">Konfirmasi</button>
               <button (click)="cancelBooking(booking.id)" class="text-sm font-medium text-red-400 hover:underline"
-                style="padding: 10px;" [disabled]="actionLoading">Batalkan</button>
+                [disabled]="actionLoading">Batalkan</button>
               } @else {
               <span class="text-xs text-padel-white/30 italic">Tidak ada aksi</span>
               }
