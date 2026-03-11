@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../core/api.service';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/auth.service';
+import { AlertService } from '../../../core/alert.service';
 
 @Component({
   selector: 'app-court-detail',
@@ -16,6 +17,7 @@ export class CourtDetailComponent implements OnInit {
   router = inject(Router);
   api = inject(ApiService);
   authService = inject(AuthService);
+  alertService = inject(AlertService);
 
   courtId!: number;
   court: any;
@@ -70,10 +72,57 @@ export class CourtDetailComponent implements OnInit {
     this.api.getCourtReviews(this.courtId).subscribe({
       next: (res) => {
         this.reviews = res;
+        
+        const currentUser = this.authService.currentUser();
+        if (currentUser) {
+          this.reviews.sort((a, b) => {
+            if (a.userId === currentUser.id) return -1;
+            if (b.userId === currentUser.id) return 1;
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          });
+        }
+
         if (res.length > 0) {
-          const sum = res.reduce((a, b) => a + b.rating, 0);
+          const sum = res.reduce((a, b: any) => a + b.rating, 0);
           this.averageRating = sum / res.length;
         }
+      }
+    });
+  }
+
+  // Edit Review
+  showEditReviewModal = false;
+  editReviewData = { id: 0, rating: 0, comment: '' };
+  editReviewError = '';
+  editActionLoading = false;
+
+  openEditReviewModal(review: any) {
+    this.editReviewData = { id: review.id, rating: review.rating, comment: review.comment };
+    this.editReviewError = '';
+    this.showEditReviewModal = true;
+  }
+
+  submitEditReview(e: Event) {
+    e.preventDefault();
+    this.editActionLoading = true;
+    this.editReviewError = '';
+
+    const req = {
+      rating: this.editReviewData.rating,
+      comment: this.editReviewData.comment
+    };
+
+    this.api.updateReview(this.editReviewData.id, req).subscribe({
+      next: () => {
+        this.alertService.toast('Ulasan berhasil diperbarui!');
+        this.showEditReviewModal = false;
+        this.editActionLoading = false;
+        this.loadReviews();
+        this.loadCourtData();
+      },
+      error: (err) => {
+        this.editReviewError = err.error?.message || 'Gagal memperbarui ulasan';
+        this.editActionLoading = false;
       }
     });
   }

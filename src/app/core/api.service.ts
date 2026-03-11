@@ -76,6 +76,10 @@ export class ApiService {
     return this.http.post(`${this.apiUrl}/reviews`, data);
   }
 
+  updateReview(id: number, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/reviews/${id}`, data);
+  }
+
   // --- USERS & DASHBOARD ---
   getAdminDashboard(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/admin/dashboard`);

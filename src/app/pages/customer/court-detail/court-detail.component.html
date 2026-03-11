@@ -47,15 +47,25 @@
               } @else {
                 <div class="space-y-6">
                   @for (review of reviews; track review.id) {
-                    <div class="border-b border-padel-white/10 pb-6 last:border-0 last:pb-0">
+                    <div class="border-b border-padel-white/10 pb-6 last:border-0 last:pb-0 relative group">
                       <div class="flex justify-between items-start mb-2">
                         <div>
-                          <p class="font-bold text-lg">{{ review.userName }}</p>
+                          <div class="flex items-center gap-2">
+                             <p class="font-bold text-lg">{{ review.userName }}</p>
+                             @if (authService.currentUser()?.id === review.userId) {
+                               <span class="text-[10px] bg-padel-lime/20 text-padel-lime px-2 py-0.5 rounded-full font-medium">Ulasan Anda</span>
+                             }
+                          </div>
                           <div class="text-yellow-400 text-sm">
                             {{ '★'.repeat(review.rating) }}{{ '☆'.repeat(5 - review.rating) }}
                           </div>
                         </div>
-                        <span class="text-xs text-padel-white/40">{{ review.createdAt | date:'longDate' }}</span>
+                        <div class="flex flex-col items-end gap-1">
+                           <span class="text-xs text-padel-white/40">{{ review.createdAt | date:'longDate' }}</span>
+                           @if (authService.currentUser()?.id === review.userId) {
+                              <button (click)="openEditReviewModal(review)" class="text-xs text-padel-lime hover:underline transition-opacity">Edit Ulasan</button>
+                           }
+                        </div>
                       </div>
                       <p class="text-padel-white/80 mt-2">{{ review.comment }}</p>
                     </div>
@@ -128,6 +138,45 @@
                 <p class="text-center text-xs text-padel-lime mt-4 mt-2">Anda harus masuk untuk melakukan pesanan.</p>
               }
             </div>
+          </div>
+        </div>
+      }
+
+      <!-- Modal Edit Review -->
+      @if (showEditReviewModal) {
+        <div class="fixed inset-0 bg-padel-dark/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div class="glass-card max-w-lg w-full p-8 relative">
+            <button (click)="showEditReviewModal = false" class="absolute top-4 right-4 text-padel-white/50 hover:text-padel-white">✕</button>
+            
+            <h2 class="text-2xl font-display font-bold mb-6">Edit Ulasan</h2>
+            
+            <form (submit)="submitEditReview($event)">
+              <div class="mb-6">
+                <label class="block text-sm font-medium mb-3">Penilaian (Bintang)</label>
+                <div class="flex gap-2">
+                  @for (star of [1,2,3,4,5]; track star) {
+                    <button type="button" (click)="editReviewData.rating = star" 
+                            class="text-3xl focus:outline-none transition-transform hover:scale-110"
+                            [ngClass]="star <= editReviewData.rating ? 'text-yellow-400' : 'text-padel-white/20'">
+                      ★
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <label class="block text-sm font-medium mb-1.5">Komentar Tambahan</label>
+                <textarea [(ngModel)]="editReviewData.comment" name="comment" rows="4" class="input-field bg-padel-dark" placeholder="Fasilitas AC dingin..."></textarea>
+              </div>
+              
+              @if (editReviewError) {
+                <p class="text-red-400 text-sm mb-4">{{ editReviewError }}</p>
+              }
+
+              <button type="submit" class="btn-primary w-full py-3" [disabled]="editActionLoading || editReviewData.rating === 0">
+                {{ editActionLoading ? 'Menyimpan...' : 'Simpan Perubahan' }}
+              </button>
+            </form>
           </div>
         </div>
       }
