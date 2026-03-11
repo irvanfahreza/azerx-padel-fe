@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { ApiService } from '../../../core/api.service';
+import { AlertService } from '../../../core/alert.service';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
@@ -12,7 +12,9 @@ import { RouterLink } from '@angular/router';
   templateUrl: './courts.component.html'
 })
 export class AdminCourtsComponent implements OnInit {
-  http = inject(HttpClient);
+  api = inject(ApiService);
+  alertService = inject(AlertService);
+  
   courts: any[] = [];
   loading = true;
   actionLoading = false;
@@ -36,7 +38,7 @@ export class AdminCourtsComponent implements OnInit {
 
   loadCourts() {
     this.loading = true;
-    this.http.get<any[]>(`${environment.apiUrl}/admin/courts`).subscribe({
+    this.api.getAdminCourts().subscribe({
       next: (data) => {
         this.courts = data;
         this.loading = false;
@@ -74,7 +76,7 @@ export class AdminCourtsComponent implements OnInit {
 
     this.actionLoading = true;
     if (this.isEditing && this.currentEditId) {
-      this.http.put(`${environment.apiUrl}/admin/courts/${this.currentEditId}`, this.courtForm).subscribe({
+      this.api.updateCourt(this.currentEditId, this.courtForm).subscribe({
         next: () => {
           this.closeModal();
           this.loadCourts();
@@ -83,7 +85,7 @@ export class AdminCourtsComponent implements OnInit {
         error: () => this.actionLoading = false
       });
     } else {
-      this.http.post(`${environment.apiUrl}/admin/courts`, this.courtForm).subscribe({
+      this.api.createCourt(this.courtForm).subscribe({
         next: () => {
           this.closeModal();
           this.loadCourts();
@@ -95,10 +97,15 @@ export class AdminCourtsComponent implements OnInit {
   }
 
   deleteCourt(id: number) {
-    if (confirm('Yakin ingin menghapus lapangan ini?')) {
-      this.http.delete(`${environment.apiUrl}/admin/courts/${id}`).subscribe({
-        next: () => this.loadCourts()
-      });
-    }
+    this.alertService.confirm('Hapus Lapangan', 'Yakin ingin menghapus lapangan ini?', 'Ya, Hapus', 'Batal').then(res => {
+      if (res.isConfirmed) {
+        this.api.deleteCourt(id).subscribe({
+          next: () => {
+            this.loadCourts();
+            this.alertService.toast('Lapangan dihapus');
+          }
+        });
+      }
+    });
   }
 }

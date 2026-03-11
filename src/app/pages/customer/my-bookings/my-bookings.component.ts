@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { ApiService } from '../../../core/api.service';
+import { AlertService } from '../../../core/alert.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -11,7 +11,8 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './my-bookings.component.html'
 })
 export class MyBookingsComponent implements OnInit {
-  http = inject(HttpClient);
+  api = inject(ApiService);
+  alertService = inject(AlertService);
   
   bookings: any[] = [];
   loading = true;
@@ -35,7 +36,7 @@ export class MyBookingsComponent implements OnInit {
   }
 
   loadBookings() {
-    this.http.get<any[]>(`${environment.apiUrl}/bookings/my`).subscribe({
+    this.api.getMyBookings().subscribe({
       next: (data) => {
         this.bookings = data;
         this.loading = false;
@@ -45,16 +46,22 @@ export class MyBookingsComponent implements OnInit {
   }
 
   cancelBooking(id: number) {
-    if (confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')) {
-      this.actionLoading = true;
-      this.http.put(`${environment.apiUrl}/bookings/${id}/cancel`, {}).subscribe({
-        next: () => {
-          this.loadBookings();
-          this.actionLoading = false;
-        },
-        error: () => this.actionLoading = false
-      });
-    }
+    this.alertService.confirm('Batal Pesanan', 'Apakah Anda yakin ingin membatalkan pesanan ini?', 'Ya, Batalkan', 'Kembali').then(res => {
+      if (res.isConfirmed) {
+        this.actionLoading = true;
+        this.api.cancelMyBooking(id).subscribe({
+          next: () => {
+            this.loadBookings();
+            this.actionLoading = false;
+            this.alertService.toast('Pesanan dibatalkan');
+          },
+          error: () => {
+            this.actionLoading = false;
+            this.alertService.error('Error', 'Gagal membatalkan pesanan');
+          }
+        });
+      }
+    });
   }
 
   openReviewModal(booking: any) {
@@ -76,9 +83,9 @@ export class MyBookingsComponent implements OnInit {
       comment: this.reviewData.comment
     };
 
-    this.http.post(`${environment.apiUrl}/reviews`, req).subscribe({
+    this.api.createReview(req).subscribe({
       next: () => {
-        alert('Tanggapan berhasil dikirim!');
+        this.alertService.success('Berhasil', 'Tanggapan berhasil dikirim!');
         this.showReviewModal = false;
         this.actionLoading = false;
         this.loadBookings();

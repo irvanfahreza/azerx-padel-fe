@@ -1,8 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../core/auth.service';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { ApiService } from '../../../core/api.service';
 
 @Component({
   selector: 'app-profile',
@@ -12,7 +11,7 @@ import { environment } from '../../../../environments/environment';
 })
 export class ProfileComponent {
   authService = inject(AuthService);
-  http = inject(HttpClient);
+  api = inject(ApiService);
   
   user = this.authService.currentUser();
   notifications: any[] = [];
@@ -23,7 +22,7 @@ export class ProfileComponent {
   }
 
   loadNotifications() {
-    this.http.get<any[]>(`${environment.apiUrl}/notifications/my`).subscribe({
+    this.api.getMyNotifications().subscribe({
       next: (data) => {
         this.notifications = data;
         this.loading = false;
@@ -34,7 +33,7 @@ export class ProfileComponent {
 
   markAsRead(notif: any) {
     if (notif.isRead) return;
-    this.http.put(`${environment.apiUrl}/notifications/${notif.id}/read`, {}).subscribe({
+    this.api.markNotificationAsRead(notif.id).subscribe({
       next: () => {
         notif.isRead = true;
       }
@@ -43,7 +42,7 @@ export class ProfileComponent {
 
   markAllAsRead() {
     this.loading = true;
-    this.http.put(`${environment.apiUrl}/notifications/read-all`, {}).subscribe({
+    this.api.markAllNotificationsAsRead().subscribe({
       next: () => {
         this.loadNotifications();
       }

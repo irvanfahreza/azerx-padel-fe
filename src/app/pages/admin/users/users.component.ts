@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { ApiService } from '../../../core/api.service';
+import { AlertService } from '../../../core/alert.service';
 
 @Component({
   selector: 'app-admin-users',
@@ -10,7 +10,9 @@ import { environment } from '../../../../environments/environment';
   templateUrl: './users.component.html'
 })
 export class UsersComponent implements OnInit {
-  http = inject(HttpClient);
+  api = inject(ApiService);
+  alertService = inject(AlertService);
+  
   users: any[] = [];
   loading = true;
   actionLoading = false;
@@ -21,7 +23,7 @@ export class UsersComponent implements OnInit {
 
   loadUsers() {
     this.loading = true;
-    this.http.get<any[]>(`${environment.apiUrl}/admin/users`).subscribe({
+    this.api.getAdminUsers().subscribe({
       next: (data) => {
         this.users = data;
         this.loading = false;
@@ -31,18 +33,21 @@ export class UsersComponent implements OnInit {
   }
 
   toggleActive(id: number) {
-    if (confirm('Ubah status aktif pengguna ini?')) {
-      this.actionLoading = true;
-      this.http.put(`${environment.apiUrl}/admin/users/${id}/toggle-active`, {}).subscribe({
-        next: () => {
-          this.loadUsers();
-          this.actionLoading = false;
-        },
-        error: (err) => {
-          alert('Gagal mengubah status: ' + (err.error?.message || 'Error'));
-          this.actionLoading = false;
-        }
-      });
-    }
+    this.alertService.confirm('Ubah Status', 'Ubah status aktif pengguna ini?', 'Ya, Ubah', 'Batal').then(res => {
+      if (res.isConfirmed) {
+        this.actionLoading = true;
+        this.api.toggleUserActive(id).subscribe({
+          next: () => {
+            this.loadUsers();
+            this.actionLoading = false;
+            this.alertService.toast('Status berhasil diubah');
+          },
+          error: (err) => {
+            this.alertService.error('Gagal', 'Gagal mengubah status: ' + (err.error?.message || 'Error'));
+            this.actionLoading = false;
+          }
+        });
+      }
+    });
   }
 }

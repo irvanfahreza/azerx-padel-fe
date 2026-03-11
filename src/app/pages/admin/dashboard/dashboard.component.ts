@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { ApiService } from '../../../core/api.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,12 +9,12 @@ import { environment } from '../../../../environments/environment';
   templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit {
-  http = inject(HttpClient);
+  api = inject(ApiService);
   stats: any;
   loading = true;
 
   ngOnInit() {
-    this.http.get<any>(`${environment.apiUrl}/admin/dashboard`).subscribe({
+    this.api.getAdminDashboard().subscribe({
       next: (data) => {
         this.stats = data;
         this.loading = false;

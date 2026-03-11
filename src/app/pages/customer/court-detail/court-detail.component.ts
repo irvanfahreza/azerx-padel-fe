@@ -1,8 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { ApiService } from '../../../core/api.service';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/auth.service';
 
@@ -15,7 +14,7 @@ import { AuthService } from '../../../core/auth.service';
 export class CourtDetailComponent implements OnInit {
   route = inject(ActivatedRoute);
   router = inject(Router);
-  http = inject(HttpClient);
+  api = inject(ApiService);
   authService = inject(AuthService);
 
   courtId!: number;
@@ -45,7 +44,7 @@ export class CourtDetailComponent implements OnInit {
   }
 
   loadCourtData() {
-    this.http.get<any>(`${environment.apiUrl}/courts/${this.courtId}?date=${this.selectedDate}`).subscribe({
+    this.api.getCourtDetail(this.courtId, this.selectedDate).subscribe({
       next: (res) => {
         this.court = res.court;
         this.schedules = res.schedules;
@@ -58,7 +57,7 @@ export class CourtDetailComponent implements OnInit {
   loadSchedules() {
     this.selectedSchedule = null;
     this.schedulesLoading = true;
-    this.http.get<any>(`${environment.apiUrl}/courts/${this.courtId}?date=${this.selectedDate}`).subscribe({
+    this.api.getCourtDetail(this.courtId, this.selectedDate).subscribe({
       next: (res) => {
         this.schedules = res.schedules;
         this.schedulesLoading = false;
@@ -68,7 +67,7 @@ export class CourtDetailComponent implements OnInit {
   }
 
   loadReviews() {
-    this.http.get<any[]>(`${environment.apiUrl}/reviews/court/${this.courtId}`).subscribe({
+    this.api.getCourtReviews(this.courtId).subscribe({
       next: (res) => {
         this.reviews = res;
         if (res.length > 0) {
@@ -103,7 +102,7 @@ export class CourtDetailComponent implements OnInit {
       notes: this.bookingNotes
     };
 
-    this.http.post<any>(`${environment.apiUrl}/bookings`, req).subscribe({
+    this.api.createBooking(req).subscribe({
       next: (res) => {
         this.router.navigate(['/booking/confirm'], { 
           state: { booking: res }

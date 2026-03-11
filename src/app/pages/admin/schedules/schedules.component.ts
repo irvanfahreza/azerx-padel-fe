@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { ApiService } from '../../../core/api.service';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
@@ -12,7 +11,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
   templateUrl: './schedules.component.html'
 })
 export class SchedulesComponent implements OnInit {
-  http = inject(HttpClient);
+  api = inject(ApiService);
   route = inject(ActivatedRoute);
   
   courtId!: number;
@@ -35,7 +34,7 @@ export class SchedulesComponent implements OnInit {
 
   loadSchedules() {
     this.loading = true;
-    this.http.get<any[]>(`${environment.apiUrl}/admin/courts/${this.courtId}/schedules?date=${this.selectedDate}`).subscribe({
+    this.api.getAdminSchedules(this.courtId, this.selectedDate).subscribe({
       next: (data) => {
         this.schedules = data;
         this.loading = false;
@@ -68,7 +67,7 @@ export class SchedulesComponent implements OnInit {
       });
     }
 
-    this.http.post(`${environment.apiUrl}/admin/courts/${this.courtId}/schedules`, requests).subscribe({
+    this.api.createAdminSchedules(this.courtId, requests).subscribe({
       next: () => {
         this.showBulkModal = false;
         this.actionLoading = false;

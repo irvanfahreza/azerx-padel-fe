@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { ApiService } from '../../../core/api.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -11,7 +10,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './reviews.component.html'
 })
 export class AdminReviewsComponent implements OnInit {
-  http = inject(HttpClient);
+  api = inject(ApiService);
   courts: any[] = [];
   reviews: any[] = [];
   selectedCourtId: number | null = null;
@@ -20,7 +19,7 @@ export class AdminReviewsComponent implements OnInit {
   loading = false;
 
   ngOnInit() {
-    this.http.get<any[]>(`${environment.apiUrl}/admin/courts`).subscribe({
+    this.api.getAdminCourts().subscribe({
       next: (data) => {
         this.courts = data;
         this.courtsLoading = false;
@@ -36,7 +35,7 @@ export class AdminReviewsComponent implements OnInit {
   loadReviews() {
     if (!this.selectedCourtId) return;
     this.loading = true;
-    this.http.get<any[]>(`${environment.apiUrl}/reviews/court/${this.selectedCourtId}`).subscribe({
+    this.api.getCourtReviews(this.selectedCourtId).subscribe({
       next: (data) => {
         this.reviews = data;
         this.loading = false;
